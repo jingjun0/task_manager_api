@@ -28,6 +28,7 @@ public class UserService {
     public void deleteUserById(Long id) {
             User user = findById(id);
             userRepository.delete(user);
+            System.out.println("User by id: " +id+ " deleted");
     }
 
     public User findById (Long id) {
