@@ -36,7 +36,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Task> tasks;
 
-    protected User () {
+    public User () {
 
     }
 

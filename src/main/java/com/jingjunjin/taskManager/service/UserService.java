@@ -1,8 +1,12 @@
 package com.jingjunjin.taskManager.service;
 
+import com.jingjunjin.taskManager.dto.request.CreateUserDTO;
+import com.jingjunjin.taskManager.dto.request.UpdateUserDTO;
+import com.jingjunjin.taskManager.dto.response.UserResponseDTO;
 import com.jingjunjin.taskManager.entity.User;
 import com.jingjunjin.taskManager.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +16,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final String USER_NOT_FOUND_MESSAGE = "User not found";
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     public UserService (UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -21,22 +26,47 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User createUser (User user) {
-        return userRepository.save(user);
+    public UserResponseDTO createUser (CreateUserDTO dto) {
+        User user = new User();
+
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+
+        User savedUser = userRepository.save(user);
+
+        return new UserResponseDTO(
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getEmail()
+        );
+    }
+
+    public User getUserEntityById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    }
+
+    private UserResponseDTO mapToDTO(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()
+        );
     }
 
     public void deleteUserById(Long id) {
-            User user = findById(id);
+            User user = getUserEntityById(id);
             userRepository.delete(user);
-            System.out.println("User by id: " +id+ " deleted");
     }
 
-    public User findById (Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE));
+    public UserResponseDTO findById (Long id) {
+        User user = getUserEntityById(id);
+
+        return mapToDTO(user);
     }
 
-    public User findByEmail (String email) {
+    public UserResponseDTO findByEmail (String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE));
     }
@@ -46,20 +76,22 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE));
     }
 
-    public User updateUser (Long id, User newData) {
-        User existingUser = findById(id);
+    public UserResponseDTO updateUser(Long id, UpdateUserDTO dto) {
 
-        if (newData.getUsername() != null) {
-            existingUser.setUsername(newData.getUsername());
+        User user = getUserEntityById(id);
+
+        if (dto.getUsername() != null) {
+            user.setUsername(dto.getUsername());
         }
-        if (newData.getEmail() != null) {
-            existingUser.setEmail(newData.getEmail());
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
         }
-        if (newData.getPassword() != null) {
-            existingUser.setPassword(newData.getPassword());
+        if (dto.getPassword() != null) {
+            user.setPassword(dto.getPassword());
         }
 
-        return userRepository.save(existingUser);
+        User updated = userRepository.save(user);
+
+        return mapToDTO(updated);
     }
-
 }
