@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
@@ -31,12 +31,12 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    public User getUserByEmail(@PathVariable String email) {
+    public UserResponseDTO getUserByEmail(@PathVariable String email) {
         return userService.findByEmail(email);
     }
 
     @GetMapping("/username/{username}")
-    public User getUserByUsername(@PathVariable String username) {
+    public UserResponseDTO getUserByUsername(@PathVariable String username) {
         return userService.findByUsername(username);
     }
 

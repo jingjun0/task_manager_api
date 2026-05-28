@@ -15,18 +15,21 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final String USER_NOT_FOUND_MESSAGE = "User not found";
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found";
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    public UserService (UserRepository userRepository) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
-    public UserResponseDTO createUser (CreateUserDTO dto) {
+    public UserResponseDTO createUser(CreateUserDTO dto) {
         User user = new User();
 
         user.setUsername(dto.getUsername());
@@ -35,11 +38,7 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        return new UserResponseDTO(
-                savedUser.getId(),
-                savedUser.getUsername(),
-                savedUser.getEmail()
-        );
+        return mapToDTO(savedUser);
     }
 
     public User getUserEntityById(Long id) {
@@ -56,24 +55,29 @@ public class UserService {
     }
 
     public void deleteUserById(Long id) {
-            User user = getUserEntityById(id);
-            userRepository.delete(user);
+        User user = getUserEntityById(id);
+        userRepository.delete(user);
+        log.info("User with id {} deleted", id);
     }
 
-    public UserResponseDTO findById (Long id) {
+    public UserResponseDTO findById(Long id) {
         User user = getUserEntityById(id);
 
         return mapToDTO(user);
     }
 
-    public UserResponseDTO findByEmail (String email) {
-        return userRepository.findByEmail(email)
+    public UserResponseDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE));
+
+        return mapToDTO(user);
     }
 
-    public User findByUsername (String username) {
-        return userRepository.findByUsername(username)
+    public UserResponseDTO findByUsername(String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE));
+
+        return mapToDTO(user);
     }
 
     public UserResponseDTO updateUser(Long id, UpdateUserDTO dto) {

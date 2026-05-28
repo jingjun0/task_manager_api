@@ -3,7 +3,6 @@ package com.jingjunjin.taskManager.entity;
 
 import com.jingjunjin.taskManager.entity.enums.TaskPriority;
 import com.jingjunjin.taskManager.entity.enums.TaskStatus;
-import com.jingjunjin.taskManager.entity.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
