@@ -22,6 +22,19 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public User getUserEntityById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE));
+    }
+
+    private UserResponseDTO mapToDTO(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()
+        );
+    }
+
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAll()
                 .stream()
@@ -39,19 +52,6 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return mapToDTO(savedUser);
-    }
-
-    public User getUserEntityById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-    }
-
-    private UserResponseDTO mapToDTO(User user) {
-        return new UserResponseDTO(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail()
-        );
     }
 
     public void deleteUserById(Long id) {
