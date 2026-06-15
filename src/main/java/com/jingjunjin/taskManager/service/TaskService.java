@@ -78,7 +78,7 @@ public class TaskService {
         return mapToDTO(task);
     }
 
-    public TaskResponseDTO updateTask (Long id, UpdateTaskDTO dto) {
+    public TaskResponseDTO updateTask (Long id, @org.jetbrains.annotations.UnknownNullability UpdateTaskDTO dto) {
         Task task = getTaskEntityById(id);
 
         if (dto.getTitle() != null) {
@@ -103,6 +103,18 @@ public class TaskService {
         Task updatedTask = taskRepository.save(task);
 
         return mapToDTO(updatedTask);
+
+    }
+
+    public List<TaskResponseDTO> getTasksByUserId (Long userId) {
+
+        User user = userService.getUserEntityById(userId);
+
+        return taskRepository.findByUserId(user.getId())
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+
 
     }
 

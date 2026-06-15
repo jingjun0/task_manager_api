@@ -4,7 +4,6 @@ package com.jingjunjin.taskManager.controller;
 import com.jingjunjin.taskManager.dto.request.CreateUserDTO;
 import com.jingjunjin.taskManager.dto.request.UpdateUserDTO;
 import com.jingjunjin.taskManager.dto.response.UserResponseDTO;
-import com.jingjunjin.taskManager.entity.User;
 import com.jingjunjin.taskManager.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
